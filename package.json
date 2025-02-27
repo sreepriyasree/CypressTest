@@ -1,12 +1,12 @@
 {
-  "name": "project1",
+  "name": "project2",
   "version": "1.0.0",
-  "description": "My First Cypress project",
+  "description": "My  Cypress project",
   "main": "index.js",
-  "scripts": {
-    "test": "node_modules\\.bin\\cypress run",
-    "runtests": "npm run test --"
-  },
+    "scripts": {
+      "start:server": "node server.js"
+    }
+  ,
   "keywords": [],
   "author": "",
   "license": "ISC",
