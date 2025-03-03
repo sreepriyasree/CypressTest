@@ -2,6 +2,7 @@ describe("User Authentication Flow", () => {
     it("should create a user, get a token, and update the role", () => {
         const timestamp = Date.now();
         const rolename = `usertest-${timestamp}`;
+        const UserID = "67b64773-160a-4cea-9d95-9d3071a0efb2";
         let roleId; // Variable to store role ID
         const updaterolename = `testrolename-${timestamp}`;
 
@@ -10,8 +11,8 @@ describe("User Authentication Flow", () => {
             method: "POST",
             url: "http://localhost:5001/v1/auth/token",
             body: {
-                username: "sreepriya@dhiway.com",
-                password: "sreetest",
+                username: "sreetest",
+                password: "sreepassword",
             },
         }).then((response) => {
             expect(response.status).to.equal(200);
@@ -80,8 +81,53 @@ describe("User Authentication Flow", () => {
                         },
                     }).then((rolesResponse) => {
                         expect(rolesResponse.status).to.equal(200);
+                        cy.log("Role id",roleId)
                         
-                    })  
+                    }) ;
+                    cy.log("User ID:", UserID);
+
+                    //ADD Role mapping 
+                    cy.request({
+                        method: "POST", // Changed from PUT to POST
+                        url: `http://localhost:5001/v1/auth/user/role-mappings`,
+                        headers: {
+                            Authorization: `Bearer ${accessToken}`,
+                            "Content-Type": "application/json",
+                        },
+                        body: {
+                            "realm_roles": [
+                                { "id": "9d8463e4-6860-49d5-b211-5208f55b40a7", "name": "Admin" }
+                            ],
+                            "user_id": UserID,
+                        }
+                    }).then((updateResponse) => {
+                        expect(updateResponse.status).to.equal(200);
+                        cy.log("Role Mapping Added Successfully");
+                    });
+                    //Delete RoleMapping
+                    cy.request({
+                        method: "DELETE",
+                        url: `http://localhost:5001/v1/auth/user/role-mappings`,
+                        headers: {
+                            Authorization: `Bearer ${accessToken}`,
+                            "Content-Type": "application/json",
+                        },
+                        body: {
+                            "realm_roles": [
+                                {
+                                    "id": "9d8463e4-6860-49d5-b211-5208f55b40a7",
+                                    "name": "Admin"
+                                }
+                            ],
+                            "user_id": UserID
+                        }
+                    }).then((response) => {
+                        expect(response.status).to.equal(200); // Ensure successful deletion
+                        cy.log("Role Mapping Deleted Successfully");
+                    });
+                    
+                    
+                  
     
                 });
             });
