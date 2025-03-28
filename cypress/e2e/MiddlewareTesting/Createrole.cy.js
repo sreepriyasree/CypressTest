@@ -9,7 +9,7 @@ describe("User Authentication Flow", () => {
         // Step 1: Get Authentication Token
         cy.request({
             method: "POST",
-            url: "http://localhost:5001/v1/auth/token",
+            url: "/auth/token",
             body: {
                 username: "sreetest",
                 password: "sreepassword",
@@ -22,7 +22,7 @@ describe("User Authentication Flow", () => {
             // Step 2: Create Role
             cy.request({
                 method: "POST",
-                url: "http://localhost:5001/v1/auth/roles",
+                url: "/auth/roles",
                 headers: {
                     Authorization: `Bearer ${accessToken}`,
                     "Content-Type": "application/json",
@@ -36,7 +36,7 @@ describe("User Authentication Flow", () => {
                 // Step 3: Get Role List and Find Created Role
                 cy.request({
                     method: "GET",
-                    url: `http://localhost:5001/v1/auth/roles`,
+                    url: `/auth/roles`,
                     headers: {
                         Authorization: `Bearer ${accessToken}`,
                         "Content-Type": "application/json",
@@ -56,7 +56,7 @@ describe("User Authentication Flow", () => {
                     // Step 4: Update Role (Fix URL)
                     cy.request({
                         method: "PUT",
-                        url: `http://localhost:5001/v1/auth/roles`, 
+                        url: `/auth/roles`, 
                         headers: {
                             Authorization: `Bearer ${accessToken}`,
                             "Content-Type": "application/json",
@@ -74,7 +74,7 @@ describe("User Authentication Flow", () => {
        // GET Role
                     cy.request({
                         method: "GET",
-                        url: `http://localhost:5001/v1/auth/roles?role=${updaterolename}`,
+                        url: `/auth/roles?role=${updaterolename}`,
                         headers: {
                             Authorization: `Bearer ${accessToken}`,
                             "Content-Type": "application/json",
@@ -89,7 +89,7 @@ describe("User Authentication Flow", () => {
                     //ADD Role mapping 
                     cy.request({
                         method: "POST", // Changed from PUT to POST
-                        url: `http://localhost:5001/v1/auth/user/role-mappings`,
+                        url: `/auth/user/role-mappings`,
                         headers: {
                             Authorization: `Bearer ${accessToken}`,
                             "Content-Type": "application/json",
@@ -107,7 +107,7 @@ describe("User Authentication Flow", () => {
                     //Delete RoleMapping
                     cy.request({
                         method: "DELETE",
-                        url: `http://localhost:5001/v1/auth/user/role-mappings`,
+                        url: `/auth/user/role-mappings`,
                         headers: {
                             Authorization: `Bearer ${accessToken}`,
                             "Content-Type": "application/json",

@@ -11,7 +11,7 @@ describe("User Authentication Flow", () => {
       // Step 1: Create User
       cy.request({
         method: "POST",
-        url: "http://localhost:5001/v1/auth/user",
+        url: "/auth/user",
         body: {
           password: "password1234",
           username: username,
@@ -28,7 +28,7 @@ describe("User Authentication Flow", () => {
       // Step 2: Get Access Token
       cy.request({
         method: "POST",
-        url: "http://localhost:5001/v1/auth/token",
+        url: "/auth/token",
         body: {
           username: username,
           password: "password1234"
@@ -44,7 +44,7 @@ describe("User Authentication Flow", () => {
         // Step 3: Refresh Token
         cy.request({
           method: "POST",
-          url: "http://localhost:5001/v1/auth/refresh/token",
+          url: "/auth/refresh/token",
           body: {
             refresh_token: refreshToken
           }

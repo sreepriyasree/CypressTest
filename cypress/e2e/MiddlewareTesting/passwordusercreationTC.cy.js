@@ -13,7 +13,7 @@ describe("User Authentication Flow", () => {
     cy.log("Testing User:", user1.username, "Email:", user1.email);
     cy.request({
       method: "POST",
-      url: "http://localhost:5001/v1/auth/user",
+      url: "/auth/user",
       body: {
         password: "@#!#$$$$#$##",
         username: user1.username,
@@ -34,7 +34,7 @@ describe("User Authentication Flow", () => {
     cy.log("Testing User:", user2.username, "Email:", user2.email);
     cy.request({
       method: "POST",
-      url: "http://localhost:5001/v1/auth/user",
+      url: "/auth/user",
       body: {
         password: "ABC123de456",
         username: user2.username,
@@ -55,7 +55,7 @@ describe("User Authentication Flow", () => {
     cy.log("Testing User:", user3.username, "Email:", user3.email);
     cy.request({
       method: "POST",
-      url: "http://localhost:5001/v1/auth/user",
+      url: "/auth/user",
       body: {
         email: user3.email,
         password: "           ",
@@ -78,7 +78,7 @@ describe("User Authentication Flow", () => {
     cy.log("Testing User:", user4.username, "Email:", user4.email);
     cy.request({
       method: "POST",
-      url: "http://localhost:5001/v1/auth/user",
+      url: "/auth/user",
       body: {
         password: "abc", // Too short
         username: user4.username,

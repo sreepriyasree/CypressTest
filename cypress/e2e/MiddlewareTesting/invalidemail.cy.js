@@ -13,7 +13,7 @@ describe("User Authentication Flow", () => {
     cy.log("Testing with valid email:", validUser.email);
     cy.request({
       method: "POST",
-      url: "http://localhost:5001/v1/auth/user",
+      url: "/auth/user",
       body: {
         password: "password1234",
         username: validUser.username,
@@ -29,7 +29,7 @@ describe("User Authentication Flow", () => {
     cy.log("Testing with spaces in email:", invalidUser1.email);
     cy.request({
       method: "POST",
-      url: "http://localhost:5001/v1/auth/user",
+      url: "/auth/user",
       body: {
         password: "password1234",
         username: invalidUser1.username,
@@ -46,7 +46,7 @@ describe("User Authentication Flow", () => {
     cy.log("Testing missing '@' in email:", invalidUser2.email);
     cy.request({
       method: "POST",
-      url: "http://localhost:5001/v1/auth/user",
+      url: "/auth/user",
       body: {
         password: "password1234",
         username: invalidUser2.username,
@@ -63,7 +63,7 @@ describe("User Authentication Flow", () => {
     cy.log("Testing invalid domain:", invalidUser3.email);
     cy.request({
       method: "POST",
-      url: "http://localhost:5001/v1/auth/user",
+      url: "/auth/user",
       body: {
         password: "password1234",
         username: invalidUser3.username,
@@ -80,7 +80,7 @@ describe("User Authentication Flow", () => {
     cy.log("Testing with forbidden characters:", invalidUser4.email);
     cy.request({
       method: "POST",
-      url: "http://localhost:5001/v1/auth/user",
+      url: "/auth/user",
       body: {
         password: "password1234",
         username: invalidUser4.username,

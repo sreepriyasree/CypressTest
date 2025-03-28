@@ -11,7 +11,7 @@ describe("User Authentication Flow", () => {
         // Step 1: Create User
         cy.request({
             method: "POST",
-            url: "http://localhost:5001/v1/auth/user",
+            url: "/auth/user",
             body: {
                 password: "password1234",
                 username: username,
@@ -28,7 +28,7 @@ describe("User Authentication Flow", () => {
             // Step 2: Get Access Token
             cy.request({
                 method: "POST",
-                url: "http://localhost:5001/v1/auth/token",
+                url: "/auth/token",
                 body: {
                     username: username,
                     password: "password1234"
@@ -44,7 +44,7 @@ describe("User Authentication Flow", () => {
                 // Step 3: Refresh Token
                 cy.request({
                     method: "POST",
-                    url: "http://localhost:5001/v1/auth/refresh/token",
+                    url: "/auth/refresh/token",
                     body: {
                         refresh_token: refreshToken
                     },
@@ -56,7 +56,7 @@ describe("User Authentication Flow", () => {
                 // Step 4: Reset Password (Fixed with Authorization Header)
                 cy.request({
                     method: "POST",
-                    url: "http://localhost:5001/v1/auth/reset-password",
+                    url: "/auth/reset-password",
                     body: {
                         new_password: "sreepassword123",
                         user_id: userId,
@@ -70,7 +70,7 @@ describe("User Authentication Flow", () => {
 
                 cy.request({
                     method: "GET",
-                    url: "http://localhost:5001/v1/auth/user",
+                    url: "/auth/user",
                     body: {
                        
                         user_id: userId,
@@ -87,7 +87,7 @@ describe("User Authentication Flow", () => {
  // Step 6: Verify email
  cy.request({
     method: "POST",
-    url: "http://localhost:5001/v1/auth/verify-email",
+    url: "/auth/verify-email",
     body: {
        
         user_id: userId,
@@ -105,7 +105,7 @@ describe("User Authentication Flow", () => {
 //step 7: Update user
                 cy.request({
                     method:"PUT",
-                    url: "http://localhost:5001/v1/auth/user",
+                    url: "/auth/user",
                     body:{
                         user_id: userId,
                         username:`usertest-${timestamp}`
