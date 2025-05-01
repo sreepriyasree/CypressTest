@@ -11,6 +11,7 @@ describe("GET call using environment variable", () => {
       });
     });
   
+    
     it("Fetches data using an invalid DID", () => {
       cy.request({
         method: "GET",
