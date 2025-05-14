@@ -12,7 +12,7 @@ describe("User Authentication Flow", () => {
             url: "/auth/token",
             body: {
                 username: "sreetest",
-                password: "sreepassword",
+                password: "sree@dhiway",
             },
         }).then((response) => {
             expect(response.status).to.equal(200);
