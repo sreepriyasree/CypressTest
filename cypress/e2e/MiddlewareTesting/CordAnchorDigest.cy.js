@@ -82,7 +82,7 @@ it("should post a digest and then fetch anchor status for the same digest", () =
             url: "/cord/update-digest",
             body: {
               old_digest: dynamicDigest,
-              new_digest: newInput,
+              new_digest: newDigest,
             },
             headers: {
               Authorization: `Bearer ${accessToken}`,
