@@ -42,6 +42,7 @@ describe("User Authentication Flow", () => {
         cy.log("Access Token:", accessToken);
         cy.log("Refresh Token:", refreshToken);
   
+        
         // Step 3: Refresh Token
         cy.request({
           method: "POST",
