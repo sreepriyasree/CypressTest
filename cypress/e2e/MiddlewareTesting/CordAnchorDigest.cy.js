@@ -1,10 +1,34 @@
 describe("POST Anchor Digest API Test", () => {
   let accessToken = "";
   let dynamicDigest = "";
-  const invalidDigest = "";
+
+  const waitForAnchorStatus = (digest, token, retries = 10, delay = 5000) => {
+    return new Cypress.Promise((resolve, reject) => {
+      cy.wait(20000);
+      const poll = (attempt = 0) => {
+        cy.request({
+          method: "GET",
+          url: `/cord/anchor-digest/status?digest=${digest}`,
+          headers: { Authorization: `Bearer ${token}` },
+          failOnStatusCode: false,
+          
+        }).then((res) => {
+           
+          cy.log(`Polling Attempt ${attempt + 1}:`, res.body.status);
+          if (res.body.status === "anchored") {
+            resolve();
+          } else if (attempt < retries - 1) {
+            setTimeout(() => poll(attempt + 1), delay);
+          } else {
+            reject("Digest did not reach 'anchored' status in time");
+          }
+        });
+      };
+      poll();
+    });
+  };
 
   before(() => {
-    // Step 1: Get Access Token
     cy.request({
       method: "POST",
       url: "/auth/token",
@@ -19,133 +43,52 @@ describe("POST Anchor Digest API Test", () => {
   });
 
   beforeEach(() => {
-    // Step 2: Generate dynamic digest (Example: using SHA256 of some string)
     const input = `Test string ${Date.now()}`;
     cy.task("generateDigest", input).then((digest) => {
       dynamicDigest = digest;
       cy.log("Generated Digest:", dynamicDigest);
     });
   });
-it("should post a digest and then fetch anchor status for the same digest", () => {
-  // Step 1: POST the dynamic digest
-  cy.request({
-    method: "POST",
-    url: "/cord/anchor-digest",
-    body: {
-      digest: dynamicDigest,
-    },
-    headers: {
-      Authorization: `Bearer ${accessToken}`,
-    },
-    failOnStatusCode: false,
-  }).then((postResponse) => {
-    cy.log("Valid Digest POST Response:", JSON.stringify(postResponse.body));
-    expect(postResponse.status).to.eq(200);
 
-    // Step 2: Use the same digest to fetch status
-   
-       // Wait for a few seconds before checking status
-    cy.wait(20000); // wait for 5 seconds (adjust if needed)
-
-    // Step 2: Use the same digest to fetch status
-    cy.log("Checking status for digest: ", dynamicDigest);
+  it("should post a digest, wait for anchoring, and then update it", () => {
+    // Step 1: POST the dynamic digest
     cy.request({
-      method: "GET",
-      url: `/cord/anchor-digest/status?digest=${dynamicDigest}`,
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-      },
+      method: "POST",
+      url: "/cord/anchor-digest",
+      body: { digest: dynamicDigest },
+      headers: { Authorization: `Bearer ${accessToken}` },
       failOnStatusCode: false,
-    }).then((getResponse) => {
-      cy.log("Anchor Status GET Response:", JSON.stringify(getResponse.body));
-      expect(getResponse.status).to.eq(200); // adjust if necessary
-    });
+    }).then((postResponse) => {
+      cy.log("POST Digest Response:", JSON.stringify(postResponse.body));
+      expect(postResponse.status).to.eq(200);
 
-    cy.request({
-        method: "GET",
-        url: `/cord/anchor-digest/status?digest=${dynamicDigest}`,
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-        },
-        failOnStatusCode: false,
-      }).then((getResponse) => {
-        cy.log("Anchor Status GET Response:", JSON.stringify(getResponse.body));
-        expect(getResponse.status).to.eq(200);
+      // Step 2: Poll for digest to be anchored
+      waitForAnchorStatus(dynamicDigest, accessToken)
+        .then(() => {
+          // Step 3: Generate a new digest to update with
+          const newInput = `Updated string ${Date.now()}`;
+          cy.task("generateDigest", newInput).then((newDigest) => {
+            cy.log("New Digest to update:", newDigest);
 
-        // Step 6: Generate new digest and update
-        const newInput = `dynamicDigest ${Date.now()}`;
-        cy.task("generateDigest", newInput).then((newDigest) => {
-          cy.log("New Digest to update:", newDigest);
-
-          cy.request({
-            method: "POST",
-            url: "/cord/update-digest",
-            body: {
-              old_digest: dynamicDigest,
-              new_digest: newDigest,
-            },
-            headers: {
-              Authorization: `Bearer ${accessToken}`,
-            },
-            failOnStatusCode: false,
-          }).then((updateResponse) => {
-            cy.log("Update Digest Response:", JSON.stringify(updateResponse.body));
-            expect(updateResponse.status).to.eq(200); // adjust as per your API spec
+            // Step 4: POST to update-digest
+            cy.request({
+              method: "POST",
+              url: "/cord/update-digest",
+              body: {
+                old_digest: dynamicDigest,
+                new_digest: newDigest,
+              },
+              headers: { Authorization: `Bearer ${accessToken}` },
+              failOnStatusCode: false,
+            }).then((updateResponse) => {
+              cy.log("Update Digest Response:", JSON.stringify(updateResponse.body));
+              expect(updateResponse.status).to.eq(200);
+            });
           });
+        })
+        .catch((err) => {
+          throw new Error(`Anchoring failed: ${err}`);
         });
-      });
+    });
   });
 });
- /* it("should return expected response for a valid digest", () => {
-    cy.request({
-      method: "POST",
-      url: "/cord/anchor-digest",
-      body: {
-        digest: dynamicDigest,
-      },
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-      },
-      failOnStatusCode: false,
-    }).then((response) => {
-      cy.log("Valid Digest POST Response:", JSON.stringify(response.body));
-      
-      expect(response.status).to.eq(200);
-    });
-  });*/
-
- /* it("should return an error for an empty digest", () => {
-    cy.request({
-      method: "POST",
-      url: "/cord/anchor-digest",
-      body: {
-        digest: invalidDigest,
-      },
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-        "Content-Type": "application/json",
-      },
-      failOnStatusCode: false,
-    }).then((response) => {
-      cy.log("Invalid Digest POST Response:", JSON.stringify(response.body));
-      expect(response.status).to.eq(400);
-     // expect(response.body).to.have.any.keys("error", "message", "status");
-    });
-  });*/
- /*  it("should fetch anchor status using provided digest", () => {
-  const providedDigest = "0xa8301d826d93c871cb3d31eb275169932c56c15863afbf316083120194a02a54";
-cy.log('digest for get ',dynamicDigest)
-  cy.request({
-    method: "GET",
-    url: `/cord/anchor-digest/status?digest=${providedDigest}`,
-  
-    headers: {
-      Authorization: `Bearer ${accessToken}`,
-    },
-    failOnStatusCode: false,
-  }).then((response) => {
-    cy.log("Anchor Status GET Response:", JSON.stringify(response.body));
-    expect(response.status).to.eq(200);// adjust based on expected behavior
-  });*/
-});
-
