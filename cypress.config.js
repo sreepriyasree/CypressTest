@@ -4,6 +4,7 @@ const crypto = require("crypto");
 module.exports = defineConfig({
   e2e: {
     baseUrl: process.env.CYPRESS_BASE_URL || "https://middleware.demo.dhiway.net/v1/",
+    baseUrlv2:process.env.CYPRESS_BASE_URL ||"https://middleware.demo.dhiway.net/v2/",
 
     setupNodeEvents(on, config) {
       on("task", {
